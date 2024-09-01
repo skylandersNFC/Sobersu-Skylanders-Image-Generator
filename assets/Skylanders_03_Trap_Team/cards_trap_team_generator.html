@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+ <head>
+  <meta charset="utf-8">
+ </head>
+ <body>
+    <canvas id='scale_1px' style='display:none;'></canvas>
+    <canvas id='scale' style='display:none;' onClick='hide("scale")'></canvas>
+    <div id='start_form'>
+	<form>
+	    <div>Size A in millimetres: <input id='sizeA' type=text value=190></div>
+	    <div>Card width in millimetres: <input id='cardSize' type=text value=54></div>
+	    <input type=button value=generate onClick='generate()'>
+	    <br><br>
+	</form>
+    <div>Example for A4, the size A is different for each printer model. You must measure it for your's printer.</div>
+    <div>!!! don't forget download entrie folder with images !!!</div>
+    <img src="images/sample.jpg">
+    </div>
+    <div id=images style='display:none;' >
+	<div id=info style='text-align: center;'><input type=button onClick='hide("info")' value="click on image to dissapears..."></div>
+    </div>
+ </body>
+<script>
+
+    var dpi = 300;
+    var mm_in = 25.4;
+    var c_width;
+    var mm_width;
+
+    const cards = ["cards\/BARKLEY_mini_back_300dpi.png","cards\/BARKLEY_mini_face_300dpi.png","cards\/BAT SPIN_back_300dpi.png","cards\/BAT SPIN_face_300dpi.png","cards\/BLACKOUT_back_300dpi.png","cards\/BLACKOUT_face_300dpi.png","cards\/BLADES_back_300dpi.png","cards\/BLADES_face_300dpi.png","cards\/BLASTERMIND_back_300dpi.png","cards\/BLASTERMIND_face_300dpi.png","cards\/BOP_mini_back_300dpi.png","cards\/BOP_mini_face_300dpi.png","cards\/BREEZE_mini_back_300dpi.png","cards\/BREEZE_mini_face_300dpi.png","cards\/BUSHWHACK_back_300dpi.png","cards\/BUSHWHACK_face_300dpi.png","cards\/CHOPPER_back_300dpi.png","cards\/CHOPPER_face_300dpi.png","cards\/COBRA CADABRA_back_300dpi.png","cards\/COBRA CADABRA_face_300dpi.png","cards\/DARK FOOD FIGHT_back_300dpi.png","cards\/DARK FOOD FIGHT_face_300dpi.png","cards\/DARK SNAP SHOT_back_300dpi.png","cards\/DARK SNAP SHOT_face_300dpi.png","cards\/DARK WILDFIRE_back_300dpi.png","cards\/DARK WILDFIRE_face_300dpi.png","cards\/DROBIT_mini_back_300dpi.png","cards\/DROBIT_mini_face_300dpi.png","cards\/D\u00c9J\u00c0 VU_back_300dpi.png","cards\/D\u00c9J\u00c0 VU_face_300dpi.png","cards\/ECHO_back_300dpi.png","cards\/ECHO_face_300dpi.png","cards\/EGGSELLENT WEERUPTOR_mini_back_300dpi.png","cards\/EGGSELLENT WEERUPTOR_mini_face_300dpi.png","cards\/ENIGMA_back_300dpi.png","cards\/ENIGMA_face_300dpi.png","cards\/EYE SMALL_mini_back_300dpi.png","cards\/EYE SMALL_mini_face_300dpi.png","cards\/FIST BUMP_back_300dpi.png","cards\/FIST BUMP_face_300dpi.png","cards\/FIZZY FRENZY POP FIZZ_series3_back_300dpi.png","cards\/FIZZY FRENZY POP FIZZ_series3_face_300dpi.png","cards\/FLING KONG_back_300dpi.png","cards\/FLING KONG_face_300dpi.png","cards\/FLIP WRECK_back_300dpi.png","cards\/FLIP WRECK_face_300dpi.png","cards\/FOOD FIGHT_back_300dpi.png","cards\/FOOD FIGHT_face_300dpi.png","cards\/FULL BLAST JET-VAC_series3_back_300dpi.png","cards\/FULL BLAST JET-VAC_series3_face_300dpi.png","cards\/FUNNY BONE_back_300dpi.png","cards\/FUNNY BONE_face_300dpi.png","cards\/GEARSHIFT_back_300dpi.png","cards\/GEARSHIFT_face_300dpi.png","cards\/GILL RUNT_mini_back_300dpi.png","cards\/GILL RUNT_mini_face_300dpi.png","cards\/GNARLY BARKLEY_mini_back_300dpi.png","cards\/GNARLY BARKLEY_mini_face_300dpi.png","cards\/GUSTO_back_300dpi.png","cards\/GUSTO_face_300dpi.png","cards\/HAND OF FATE_back_300dpi.png","cards\/HAND OF FATE_face_300dpi.png","cards\/HEAD RUSH_back_300dpi.png","cards\/HEAD RUSH_face_300dpi.png","cards\/HIGH FIVE_back_300dpi.png","cards\/HIGH FIVE_face_300dpi.png","cards\/HIJINX_mini_back_300dpi.png","cards\/HIJINX_mini_face_300dpi.png","cards\/HOG WILD FRYNO_series2_back_300dpi.png","cards\/HOG WILD FRYNO_series2_face_300dpi.png","cards\/JAWBREAKER_back_300dpi.png","cards\/JAWBREAKER_face_300dpi.png","cards\/KA-BOOM_back_300dpi.png","cards\/KA-BOOM_face_300dpi.png","cards\/KING COBRA CADABRA_back_300dpi.png","cards\/KING COBRA CADABRA_face_300dpi.png","cards\/KNIGHT LIGHT_back_300dpi.png","cards\/KNIGHT LIGHT_face_300dpi.png","cards\/KNIGHT MARE_back_300dpi.png","cards\/KNIGHT MARE_face_300dpi.png","cards\/KRYPT KING_back_300dpi.png","cards\/KRYPT KING_face_300dpi.png","cards\/LEGENDARY BLADES_back_300dpi.png","cards\/LEGENDARY BLADES_face_300dpi.png","cards\/LEGENDARY BUSHWHACK_back_300dpi.png","cards\/LEGENDARY BUSHWHACK_face_300dpi.png","cards\/LEGENDARY D\u00c9J\u00c0 VU_back_300dpi.png","cards\/LEGENDARY D\u00c9J\u00c0 VU_face_300dpi.png","cards\/LEGENDARY HAND OF FATE_back_300dpi.png","cards\/LEGENDARY HAND OF FATE_face_300dpi.png","cards\/LEGENDARY JAWBREAKER_back_300dpi.png","cards\/LEGENDARY JAWBREAKER_face_300dpi.png","cards\/LOB-STAR_back_300dpi.png","cards\/LOB-STAR_face_300dpi.png","cards\/LOVE POTION POP FIZZ_series3_back_300dpi.png","cards\/LOVE POTION POP FIZZ_series3_face_300dpi.png","cards\/MIDNIGHT MUSEUM_back_300dpi.png","cards\/MIDNIGHT MUSEUM_face_300dpi.png","cards\/MINI JINI_mini_back_300dpi.png","cards\/MINI JINI_mini_face_300dpi.png","cards\/MIRROR OF MYSTERY_back_300dpi.png","cards\/MIRROR OF MYSTERY_face_300dpi.png","cards\/NIGHTMARE EXPRESS_back_300dpi.png","cards\/NIGHTMARE EXPRESS_face_300dpi.png","cards\/NITRO HEAD RUSH_back_300dpi.png","cards\/NITRO HEAD RUSH_face_300dpi.png","cards\/NITRO KRYPT KING_back_300dpi.png","cards\/NITRO KRYPT KING_face_300dpi.png","cards\/PET VAC_mini_back_300dpi.png","cards\/PET VAC_mini_face_300dpi.png","cards\/PIGGY BANK_back_300dpi.png","cards\/PIGGY BANK_face_300dpi.png","cards\/POWER PUNCH PET VAC_mini_back_300dpi.png","cards\/POWER PUNCH PET VAC_mini_face_300dpi.png","cards\/ROCKET RAM_back_300dpi.png","cards\/ROCKET RAM_face_300dpi.png","cards\/ROCKY ROLL_back_300dpi.png","cards\/ROCKY ROLL_face_300dpi.png","cards\/SHORT CUT_back_300dpi.png","cards\/SHORT CUT_face_300dpi.png","cards\/SMALL FRY_mini_back_300dpi.png","cards\/SMALL FRY_mini_face_300dpi.png","cards\/SNAP SHOT_back_300dpi.png","cards\/SNAP SHOT_face_300dpi.png","cards\/SPOTLIGHT_back_300dpi.png","cards\/SPOTLIGHT_face_300dpi.png","cards\/SPRY_mini_back_300dpi.png","cards\/SPRY_mini_face_300dpi.png","cards\/SUNSCRAPER SPIRE_back_300dpi.png","cards\/SUNSCRAPER SPIRE_face_300dpi.png","cards\/SURE SHOT SHROOMBOOM_series2_back_300dpi.png","cards\/SURE SHOT SHROOMBOOM_series2_face_300dpi.png","cards\/TERRABITE_mini_back_300dpi.png","cards\/TERRABITE_mini_face_300dpi.png","cards\/THUMPLING_mini_back_300dpi.png","cards\/THUMPLING_mini_face_300dpi.png","cards\/THUNDERBOLT_back_300dpi.png","cards\/THUNDERBOLT_face_300dpi.png","cards\/TIDAL WAVE GILL GRUNT_series4_back_300dpi.png","cards\/TIDAL WAVE GILL GRUNT_series4_face_300dpi.png","cards\/TIKI SPEAKY_back_300dpi.png","cards\/TIKI SPEAKY_face_300dpi.png","cards\/TORCH_back_300dpi.png","cards\/TORCH_face_300dpi.png","cards\/TRAIL BLAZER_back_300dpi.png","cards\/TRAIL BLAZER_face_300dpi.png","cards\/TREAD HEAD_back_300dpi.png","cards\/TREAD HEAD_face_300dpi.png","cards\/TRIGGER SNAPPY_mini_back_300dpi.png","cards\/TRIGGER SNAPPY_mini_face_300dpi.png","cards\/TUFF LUCK_back_300dpi.png","cards\/TUFF LUCK_face_300dpi.png","cards\/WALLOP_back_300dpi.png","cards\/WALLOP_face_300dpi.png","cards\/WEERUPTOR_mini_back_300dpi.png","cards\/WEERUPTOR_mini_face_300dpi.png","cards\/WHISPER ELF_mini_back_300dpi.png","cards\/WHISPER ELF_mini_face_300dpi.png","cards\/WILDFIRE_back_300dpi.png","cards\/WILDFIRE_face_300dpi.png","cards\/WINTERFEST LOB-STAR_back_300dpi.png","cards\/WINTERFEST LOB-STAR_face_300dpi.png"];
+
+    function init_scale(width, dpi)
+    {
+	var canvas = document.getElementById("scale_1px");
+	var font_height = 8;
+	var c_height = 30;
+	var s_height = c_height / 2 - 1;
+
+	c_width = width / mm_in * dpi;
+	mm_width = width;
+
+	canvas.width = parseInt(c_width);
+	canvas.height = 1;
+
+	canvas = document.getElementById("scale");
+
+	canvas.width = parseInt(c_width);
+	canvas.height = c_height;
+
+	const ctx = canvas.getContext("2d");
+	
+	ctx.font = font_height + "px serif";
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 2;
+
+	ctx.beginPath();
+	ctx.moveTo(canvas.width - 2, 0);
+	ctx.lineTo(canvas.width - 2, c_height);
+	ctx.stroke();
+	
+	for ( i = 0 ; i < width ; i++ )
+	{
+	    pos = i / width * c_width + 1;
+
+	    if ( i % 10 == 0 )
+	    {
+		ctx.fillText( i + " mm", pos + 4, c_height - s_height + font_height );
+		ctx.lineWidth = 2;
+		h = s_height;
+	    }
+	    else
+	    {
+		ctx.lineWidth = 1;
+		h = s_height / 2;
+	    }
+
+	    ctx.beginPath();
+	    ctx.moveTo(pos, c_height);
+	    ctx.lineTo(pos, c_height - h);
+	    ctx.stroke();
+	}
+
+	for ( i = 0 ; i < width / mm_in * 16; i++ )
+	{
+	    pos = i * mm_in / 16 / width * c_width + 1;
+	    h = 10;
+	    if ( i % 16 == 0 )
+	    {
+		ctx.lineWidth = 2;
+		h = s_height;
+	    }
+	    else
+	    {
+		if ( i % 8 == 0 )
+		{
+		    h = s_height * 3 / 4;
+		    ctx.lineWidth = 2;
+		}
+		else
+		{
+		    if ( i % 2 == 0 )
+			h = s_height * 3 / 5;
+		    else
+			h = s_height * 3 / 6;
+		}
+		ctx.lineWidth = 1;
+	    }
+	    ctx.beginPath();
+	    ctx.moveTo(pos, 0);
+	    ctx.lineTo(pos, h);
+	    ctx.stroke();
+	}
+
+	for ( i = 0 ; i < width / mm_in  ; i++ )
+	{
+	    pos = i * mm_in / width * c_width;
+	    ctx.fillText( i + " in", pos + 4, s_height);
+	}
+    }
+
+    function hide(id)
+    {
+	document.getElementById(id).style.display = "none";
+    }
+
+    function generate()
+    {
+	document.getElementById("scale").style.display = "inline";
+	document.getElementById("scale_1px").style.display = "inline";
+	document.getElementById("images").style.display = "inline";
+	init_scale(document.getElementById("sizeA").value, dpi);
+	hide("start_form");
+
+	card_size = document.getElementById("cardSize").value;
+
+	var cs = parseInt(card_size / mm_width * c_width);
+	var ch = parseInt(cs * 3.375 / 2.125 );
+	cs++;
+	ch++;
+
+	imgs = document.getElementById("images");
+	for (let i=0; i < cards.length; i++)
+	{
+	    var img = document.createElement('img');
+            img.src = cards[i];
+
+	    img.style.height = ch + "px";
+	    img.style.width = cs + "px";
+	    img.id = 'im' + i;
+	    img.onclick = function(){hide('im' + i);}
+	    img.style.paddingRight = '4px';
+
+            imgs.appendChild(img);
+	}
+
+    }
+
+</script>
+</html>

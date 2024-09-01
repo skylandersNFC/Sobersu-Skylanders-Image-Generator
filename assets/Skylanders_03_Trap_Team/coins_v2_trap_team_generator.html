@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+ <head>
+  <meta charset="utf-8">
+ </head>
+ <body>
+    <canvas id='scale_1px' style='display:none;'></canvas>
+    <canvas id='scale' style='display:none;' onClick='hide("scale")'></canvas>
+    <div id='start_form'>
+	<form>
+	    <div>Size A in millimetres: <input id='sizeA' type=text value=190></div>
+	    <div>Coin size in millimetres: <input id='coinSize' type=text value=26></div>
+	    <input type=button value=generate onClick='generate()'>
+	    <br><br>
+	</form>
+    <div>Example for A4, the size A is different for each printer model. You must measure it for your's printer.</div>
+    <div>!!! don't forget download entrie folder with images !!!</div>
+    <img src="images/sample.jpg">
+    </div>
+    <div id=images style='display:none;' >
+	<div id=info style='text-align: center;'><input type=button onClick='hide("info")' value="click on image to dissapears..."></div>
+    </div>
+ </body>
+<script>
+
+    var dpi = 300;
+    var mm_in = 25.4;
+    var c_width;
+    var mm_width;
+
+    const coins = ["coins_v2\/BARKLEY_mini_icon_logo_300dpi.png","coins_v2\/BARKLEY_mini_logo_v2_300dpi.png","coins_v2\/BAT SPIN_icon_logo_300dpi.png","coins_v2\/BAT SPIN_logo_v2_300dpi.png","coins_v2\/BLACKOUT_icon_logo_300dpi.png","coins_v2\/BLACKOUT_logo_v2_300dpi.png","coins_v2\/BLADES_icon_logo_300dpi.png","coins_v2\/BLADES_logo_v2_300dpi.png","coins_v2\/BLASTERMIND_icon_logo_300dpi.png","coins_v2\/BLASTERMIND_logo_v2_300dpi.png","coins_v2\/BOP_mini_icon_logo_300dpi.png","coins_v2\/BOP_mini_logo_v2_300dpi.png","coins_v2\/BREEZE_mini_icon_logo_300dpi.png","coins_v2\/BREEZE_mini_logo_v2_300dpi.png","coins_v2\/BUSHWHACK_icon_logo_300dpi.png","coins_v2\/BUSHWHACK_logo_v2_300dpi.png","coins_v2\/CHOPPER_icon_logo_300dpi.png","coins_v2\/CHOPPER_logo_v2_300dpi.png","coins_v2\/COBRA CADABRA_icon_logo_300dpi.png","coins_v2\/COBRA CADABRA_logo_v2_300dpi.png","coins_v2\/DARK FOOD FIGHT_icon_logo_300dpi.png","coins_v2\/DARK FOOD FIGHT_logo_v2_300dpi.png","coins_v2\/DARK SNAP SHOT_icon_logo_300dpi.png","coins_v2\/DARK SNAP SHOT_logo_v2_300dpi.png","coins_v2\/DARK WILDFIRE_icon_logo_300dpi.png","coins_v2\/DARK WILDFIRE_logo_v2_300dpi.png","coins_v2\/DROBIT_mini_icon_logo_300dpi.png","coins_v2\/DROBIT_mini_logo_v2_300dpi.png","coins_v2\/D\u00c9J\u00c0 VU_icon_logo_300dpi.png","coins_v2\/D\u00c9J\u00c0 VU_logo_v2_300dpi.png","coins_v2\/ECHO_icon_logo_300dpi.png","coins_v2\/ECHO_logo_v2_300dpi.png","coins_v2\/EGGSELLENT WEERUPTOR_mini_icon_logo_300dpi.png","coins_v2\/EGGSELLENT WEERUPTOR_mini_logo_v2_300dpi.png","coins_v2\/ENIGMA_icon_logo_300dpi.png","coins_v2\/ENIGMA_logo_v2_300dpi.png","coins_v2\/EYE SMALL_mini_icon_logo_300dpi.png","coins_v2\/EYE SMALL_mini_logo_v2_300dpi.png","coins_v2\/FIST BUMP_icon_logo_300dpi.png","coins_v2\/FIST BUMP_logo_v2_300dpi.png","coins_v2\/FIZZY FRENZY POP FIZZ_series3_icon_logo_300dpi.png","coins_v2\/FIZZY FRENZY POP FIZZ_series3_logo_v2_300dpi.png","coins_v2\/FLING KONG_icon_logo_300dpi.png","coins_v2\/FLING KONG_logo_v2_300dpi.png","coins_v2\/FLIP WRECK_icon_logo_300dpi.png","coins_v2\/FLIP WRECK_logo_v2_300dpi.png","coins_v2\/FOOD FIGHT_icon_logo_300dpi.png","coins_v2\/FOOD FIGHT_logo_v2_300dpi.png","coins_v2\/FULL BLAST JET-VAC_series3_icon_logo_300dpi.png","coins_v2\/FULL BLAST JET-VAC_series3_logo_v2_300dpi.png","coins_v2\/FUNNY BONE_icon_logo_300dpi.png","coins_v2\/FUNNY BONE_logo_v2_300dpi.png","coins_v2\/GEARSHIFT_icon_logo_300dpi.png","coins_v2\/GEARSHIFT_logo_v2_300dpi.png","coins_v2\/GILL RUNT_mini_icon_logo_300dpi.png","coins_v2\/GILL RUNT_mini_logo_v2_300dpi.png","coins_v2\/GNARLY BARKLEY_mini_icon_logo_300dpi.png","coins_v2\/GNARLY BARKLEY_mini_logo_v2_300dpi.png","coins_v2\/GUSTO_icon_logo_300dpi.png","coins_v2\/GUSTO_logo_v2_300dpi.png","coins_v2\/HAND OF FATE_icon_logo_300dpi.png","coins_v2\/HAND OF FATE_logo_300dpi.png","coins_v2\/HEAD RUSH_icon_logo_300dpi.png","coins_v2\/HEAD RUSH_logo_v2_300dpi.png","coins_v2\/HIGH FIVE_icon_logo_300dpi.png","coins_v2\/HIGH FIVE_logo_v2_300dpi.png","coins_v2\/HIJINX_mini_icon_logo_300dpi.png","coins_v2\/HIJINX_mini_logo_v2_300dpi.png","coins_v2\/HOG WILD FRYNO_series2_icon_logo_300dpi.png","coins_v2\/HOG WILD FRYNO_series2_logo_v2_300dpi.png","coins_v2\/JAWBREAKER_icon_logo_300dpi.png","coins_v2\/JAWBREAKER_logo_v2_300dpi.png","coins_v2\/KA-BOOM_icon_logo_300dpi.png","coins_v2\/KA-BOOM_logo_v2_300dpi.png","coins_v2\/KING COBRA CADABRA_icon_logo_300dpi.png","coins_v2\/KING COBRA CADABRA_logo_v2_300dpi.png","coins_v2\/KNIGHT LIGHT_icon_logo_300dpi.png","coins_v2\/KNIGHT LIGHT_logo_v2_300dpi.png","coins_v2\/KNIGHT MARE_icon_logo_300dpi.png","coins_v2\/KNIGHT MARE_logo_v2_300dpi.png","coins_v2\/KRYPT KING_icon_logo_300dpi.png","coins_v2\/KRYPT KING_logo_v2_300dpi.png","coins_v2\/LEGENDARY BLADES_icon_logo_300dpi.png","coins_v2\/LEGENDARY BLADES_logo_v2_300dpi.png","coins_v2\/LEGENDARY BUSHWHACK_icon_logo_300dpi.png","coins_v2\/LEGENDARY BUSHWHACK_logo_v2_300dpi.png","coins_v2\/LEGENDARY D\u00c9J\u00c0 VU_icon_logo_300dpi.png","coins_v2\/LEGENDARY D\u00c9J\u00c0 VU_logo_v2_300dpi.png","coins_v2\/LEGENDARY HAND OF FATE_icon_logo_300dpi.png","coins_v2\/LEGENDARY HAND OF FATE_logo_300dpi.png","coins_v2\/LEGENDARY JAWBREAKER_icon_logo_300dpi.png","coins_v2\/LEGENDARY JAWBREAKER_logo_v2_300dpi.png","coins_v2\/LOB-STAR_icon_logo_300dpi.png","coins_v2\/LOB-STAR_logo_v2_300dpi.png","coins_v2\/LOVE POTION POP FIZZ_series3_icon_logo_300dpi.png","coins_v2\/LOVE POTION POP FIZZ_series3_logo_v2_300dpi.png","coins_v2\/MIDNIGHT MUSEUM_icon_logo_300dpi.png","coins_v2\/MIDNIGHT MUSEUM_logo_300dpi.png","coins_v2\/MINI JINI_mini_icon_logo_300dpi.png","coins_v2\/MINI JINI_mini_logo_v2_300dpi.png","coins_v2\/MIRROR OF MYSTERY_icon_logo_300dpi.png","coins_v2\/MIRROR OF MYSTERY_logo_300dpi.png","coins_v2\/NIGHTMARE EXPRESS_icon_logo_300dpi.png","coins_v2\/NIGHTMARE EXPRESS_logo_300dpi.png","coins_v2\/NITRO HEAD RUSH_icon_logo_300dpi.png","coins_v2\/NITRO HEAD RUSH_logo_v2_300dpi.png","coins_v2\/NITRO KRYPT KING_icon_logo_300dpi.png","coins_v2\/NITRO KRYPT KING_logo_v2_300dpi.png","coins_v2\/PET VAC_mini_icon_logo_300dpi.png","coins_v2\/PET VAC_mini_logo_v2_300dpi.png","coins_v2\/PIGGY BANK_icon_logo_300dpi.png","coins_v2\/PIGGY BANK_logo_300dpi.png","coins_v2\/POWER PUNCH PET VAC_mini_icon_logo_300dpi.png","coins_v2\/POWER PUNCH PET VAC_mini_logo_v2_300dpi.png","coins_v2\/ROCKET RAM_icon_logo_300dpi.png","coins_v2\/ROCKET RAM_logo_300dpi.png","coins_v2\/ROCKY ROLL_icon_logo_300dpi.png","coins_v2\/ROCKY ROLL_logo_v2_300dpi.png","coins_v2\/SHORT CUT_icon_logo_300dpi.png","coins_v2\/SHORT CUT_logo_v2_300dpi.png","coins_v2\/SMALL FRY_mini_icon_logo_300dpi.png","coins_v2\/SMALL FRY_mini_logo_v2_300dpi.png","coins_v2\/SNAP SHOT_icon_logo_300dpi.png","coins_v2\/SNAP SHOT_logo_v2_300dpi.png","coins_v2\/SPOTLIGHT_icon_logo_300dpi.png","coins_v2\/SPOTLIGHT_logo_v2_300dpi.png","coins_v2\/SPRY_mini_icon_logo_300dpi.png","coins_v2\/SPRY_mini_logo_v2_300dpi.png","coins_v2\/SUNSCRAPER SPIRE_icon_logo_300dpi.png","coins_v2\/SUNSCRAPER SPIRE_logo_300dpi.png","coins_v2\/SURE SHOT SHROOMBOOM_series2_icon_logo_300dpi.png","coins_v2\/SURE SHOT SHROOMBOOM_series2_logo_v2_300dpi.png","coins_v2\/TERRABITE_mini_icon_logo_300dpi.png","coins_v2\/TERRABITE_mini_logo_v2_300dpi.png","coins_v2\/THUMPLING_mini_icon_logo_300dpi.png","coins_v2\/THUMPLING_mini_logo_v2_300dpi.png","coins_v2\/THUNDERBOLT_icon_logo_300dpi.png","coins_v2\/THUNDERBOLT_logo_v2_300dpi.png","coins_v2\/TIDAL WAVE GILL GRUNT_series4_icon_logo_300dpi.png","coins_v2\/TIDAL WAVE GILL GRUNT_series4_logo_v2_300dpi.png","coins_v2\/TIKI SPEAKY_icon_logo_300dpi.png","coins_v2\/TIKI SPEAKY_logo_300dpi.png","coins_v2\/TORCH_icon_logo_300dpi.png","coins_v2\/TORCH_logo_v2_300dpi.png","coins_v2\/TRAIL BLAZER_icon_logo_300dpi.png","coins_v2\/TRAIL BLAZER_logo_v2_300dpi.png","coins_v2\/TREAD HEAD_icon_logo_300dpi.png","coins_v2\/TREAD HEAD_logo_v2_300dpi.png","coins_v2\/TRIGGER SNAPPY_mini_icon_logo_300dpi.png","coins_v2\/TRIGGER SNAPPY_mini_logo_v2_300dpi.png","coins_v2\/TUFF LUCK_icon_logo_300dpi.png","coins_v2\/TUFF LUCK_logo_v2_300dpi.png","coins_v2\/WALLOP_icon_logo_300dpi.png","coins_v2\/WALLOP_logo_v2_300dpi.png","coins_v2\/WEERUPTOR_mini_icon_logo_300dpi.png","coins_v2\/WEERUPTOR_mini_logo_v2_300dpi.png","coins_v2\/WHISPER ELF_mini_icon_logo_300dpi.png","coins_v2\/WHISPER ELF_mini_logo_v2_300dpi.png","coins_v2\/WILDFIRE_icon_logo_300dpi.png","coins_v2\/WILDFIRE_logo_v2_300dpi.png","coins_v2\/WINTERFEST LOB-STAR_icon_logo_300dpi.png","coins_v2\/WINTERFEST LOB-STAR_logo_v2_300dpi.png"]
+
+    function init_scale(width, dpi)
+    {
+	var canvas = document.getElementById("scale_1px");
+	var font_height = 8;
+	var c_height = 30;
+	var s_height = c_height / 2 - 1;
+
+	c_width = width / mm_in * dpi;
+	mm_width = width;
+
+	canvas.width = parseInt(c_width);
+	canvas.height = 1;
+
+	canvas = document.getElementById("scale");
+
+	canvas.width = parseInt(c_width);
+	canvas.height = c_height;
+
+	const ctx = canvas.getContext("2d");
+	
+	ctx.font = font_height + "px serif";
+	ctx.strokeStyle = 'black';
+	ctx.lineWidth = 2;
+
+	ctx.beginPath();
+	ctx.moveTo(canvas.width - 2, 0);
+	ctx.lineTo(canvas.width - 2, c_height);
+	ctx.stroke();
+	
+	for ( i = 0 ; i < width ; i++ )
+	{
+	    pos = i / width * c_width + 1;
+
+	    if ( i % 10 == 0 )
+	    {
+		ctx.fillText( i + " mm", pos + 4, c_height - s_height + font_height );
+		ctx.lineWidth = 2;
+		h = s_height;
+	    }
+	    else
+	    {
+		ctx.lineWidth = 1;
+		h = s_height / 2;
+	    }
+
+	    ctx.beginPath();
+	    ctx.moveTo(pos, c_height);
+	    ctx.lineTo(pos, c_height - h);
+	    ctx.stroke();
+	}
+
+	for ( i = 0 ; i < width / mm_in * 16; i++ )
+	{
+	    pos = i * mm_in / 16 / width * c_width + 1;
+	    h = 10;
+	    if ( i % 16 == 0 )
+	    {
+		ctx.lineWidth = 2;
+		h = s_height;
+	    }
+	    else
+	    {
+		if ( i % 8 == 0 )
+		{
+		    h = s_height * 3 / 4;
+		    ctx.lineWidth = 2;
+		}
+		else
+		{
+		    if ( i % 2 == 0 )
+			h = s_height * 3 / 5;
+		    else
+			h = s_height * 3 / 6;
+		}
+		ctx.lineWidth = 1;
+	    }
+	    ctx.beginPath();
+	    ctx.moveTo(pos, 0);
+	    ctx.lineTo(pos, h);
+	    ctx.stroke();
+	}
+
+	for ( i = 0 ; i < width / mm_in  ; i++ )
+	{
+	    pos = i * mm_in / width * c_width;
+	    ctx.fillText( i + " in", pos + 4, s_height);
+	}
+    }
+
+    function hide(id)
+    {
+	document.getElementById(id).style.display = "none";
+    }
+
+    function generate()
+    {
+	document.getElementById("scale").style.display = "inline";
+	document.getElementById("scale_1px").style.display = "inline";
+	document.getElementById("images").style.display = "inline";
+	init_scale(document.getElementById("sizeA").value, dpi);
+	hide("start_form");
+
+	coin_size = document.getElementById("coinSize").value;
+
+	var cs = parseInt(coin_size / mm_width * c_width);
+
+	imgs = document.getElementById("images");
+	for (let i=0; i < coins.length; i++)
+	{
+	    var img = document.createElement('img');
+            img.src = coins[i];
+
+	    
+	    img.style.height = cs + "px";
+	    img.style.width = cs + "px";
+	    img.id = 'im' + i;
+	    img.onclick = function(){hide('im' + i);}
+	    img.style.paddingRight = '2px';
+
+            imgs.appendChild(img);
+	}
+
+    }
+
+</script>
+</html>
